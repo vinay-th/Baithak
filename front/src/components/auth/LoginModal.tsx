@@ -1,4 +1,3 @@
-'use client';
 import React from 'react';
 import {
   Dialog,
@@ -19,7 +18,7 @@ const handleGoogleLogin = async () => {
   });
 };
 
-const LoginModal = () => {
+export default function LoginModal() {
   return (
     <Dialog>
       <DialogTrigger asChild>
@@ -27,9 +26,9 @@ const LoginModal = () => {
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle className="text-2xl">Welcome to Baithak</DialogTitle>
+          <DialogTitle className="text-2xl">Welcome to QuickChat</DialogTitle>
           <DialogDescription>
-            Baithak makes it effortless to create secure chat links and start
+            QuickChat makes it effortless to create secure chat links and start
             conversations in seconds.
           </DialogDescription>
         </DialogHeader>
@@ -46,6 +45,4 @@ const LoginModal = () => {
       </DialogContent>
     </Dialog>
   );
-};
-
-export default LoginModal;
+}
