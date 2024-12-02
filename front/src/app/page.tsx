@@ -1,9 +1,30 @@
-import { Button } from '@/components/ui/button';
-export default function Home() {
+import Navbar from '@/components/base/Navbar';
+import HeroSection from '@/components/base/Hero';
+import FeatureSection from '@/components/base/FeatureSection';
+import UserReviews from '@/components/base/UserReviews';
+import Footer from '@/components/base/Footer';
+import { getServerSession } from 'next-auth';
+import { authOptions, CustomSession } from './api/auth/[...nextauth]/options';
+// import { authOptions, CustomSession } from './api/auth/[...nextauth]/options';
+// import { getServerSession } from 'next-auth';
+export default async function LandingPage() {
+  const session: CustomSession | null = await getServerSession(authOptions);
   return (
-    <div className="flex flex-row text-center justify-center items-center h-screen">
-      <h1 className="text-3xl font-bold">Sinh ni baithak!</h1>
-      <Button>Join</Button>
+    <div className="min-h-screen flex flex-col ">
+      {/* Header */}
+      {/* user={session?.user ?? null} */}
+      <Navbar user={session?.user ?? null} />
+      {/* Hero Section */}
+      <HeroSection />
+
+      {/* Features Section */}
+      <FeatureSection />
+
+      {/* User Reviews Section */}
+      <UserReviews />
+
+      {/* Footer */}
+      <Footer />
     </div>
   );
 }
