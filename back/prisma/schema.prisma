@@ -8,13 +8,13 @@ datasource db {
 }
 
 model User{
-  id Int @id @default(autoincrement())
-  name String @db.VarChar(255)
-  email String @unique @db.VarChar(255) 
-  password String @db.VarChar(255)
-  image String? @db.VarChar(255)
-  oauth_id String @db.VarChar(255)
-  created_at DateTime @default(now())
+  id         Int         @id @default(autoincrement())
+  name       String      @db.VarChar(191)
+  email      String      @unique
+  provider   String
+  oauth_id   String
+  image      String?
+  created_at DateTime    @default(now())
 
   @@map("users")
 }

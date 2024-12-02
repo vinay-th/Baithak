@@ -1,14 +1,14 @@
-import { Account, AuthOptions, ISODateString } from 'next-auth';
+import { Account, AuthOptions, ISODateString, User } from 'next-auth';
 import { JWT } from 'next-auth/jwt';
-import axios from 'axios';
 import GoogleProvider from 'next-auth/providers/google';
+import axios, { AxiosError } from 'axios';
 import { LOGIN_URL } from '@/lib/apiEndPoint';
+import { redirect } from 'next/navigation';
 
 export interface CustomSession {
   user?: CustomUser;
-  expires?: ISODateString;
+  expires: ISODateString;
 }
-
 export interface CustomUser {
   id?: string | null;
   name?: string | null;
@@ -17,7 +17,6 @@ export interface CustomUser {
   provider?: string | null;
   token?: string | null;
 }
-
 export const authOptions: AuthOptions = {
   pages: {
     signIn: '/',
@@ -31,49 +30,49 @@ export const authOptions: AuthOptions = {
       account: Account | null;
     }) {
       try {
-        console.log('User', user);
-        console.log('Account', account);
-
         const payload = {
-          email: user.email,
-          name: user.name,
+          email: user.email!,
+          name: user.name!,
           oauth_id: account?.providerAccountId,
           provider: account?.provider,
           image: user?.image,
         };
-
+        console.log(payload);
         const { data } = await axios.post(LOGIN_URL, payload);
 
-        user.id = data?.user?.id.toString();
+        user.id = data?.user?.id?.toString();
         user.token = data?.user?.token;
-        user.provider = data?.user?.provider;
-
         return true;
       } catch (error) {
-        console.log(error);
-        return false;
+        if (error instanceof AxiosError) {
+          return redirect(`/auth/error?message=${error.message}`);
+        }
+        return redirect(
+          `/auth/error?message=Something went wrong.please try again!`
+        );
       }
     },
 
-    async session({
-      session,
-      user,
-      token,
-    }: {
-      session: CustomSession;
-      user: CustomUser;
-      token: JWT;
-    }) {
-      session.user = token.user as CustomUser;
-      return session;
-    },
     async jwt({ token, user }) {
       if (user) {
         token.user = user;
       }
       return token;
     },
+
+    async session({
+      session,
+      token,
+    }: {
+      session: CustomSession;
+      token: JWT;
+      user: User;
+    }) {
+      session.user = token.user as CustomUser;
+      return session;
+    },
   },
+
   providers: [
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID!,

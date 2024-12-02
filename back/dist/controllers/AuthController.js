@@ -1,9 +1,9 @@
-import prisma from '../config/db.config.js';
 import jwt from 'jsonwebtoken';
+import prisma from '../config/db.config.js';
 class AuthController {
-    static async login(request, response) {
+    static async login(req, res) {
         try {
-            const body = request.body;
+            const body = req.body;
             let findUser = await prisma.user.findUnique({
                 where: {
                     email: body.email,
@@ -20,18 +20,20 @@ class AuthController {
                 id: findUser.id,
             };
             const token = jwt.sign(JWTPayload, process.env.JWT_SECRET, {
-                expiresIn: '30d',
+                expiresIn: '365d',
             });
-            return response.json({
-                message: 'User logged in successfully',
+            return res.json({
+                message: 'Logged in successfully!',
                 user: {
                     ...findUser,
                     token: `Bearer ${token}`,
                 },
             });
         }
-        catch (err) {
-            response.status(500).json({ message: 'Internal server error' });
+        catch (error) {
+            return res
+                .status(500)
+                .json({ message: 'Something went wrong.please try again!' });
         }
     }
 }
